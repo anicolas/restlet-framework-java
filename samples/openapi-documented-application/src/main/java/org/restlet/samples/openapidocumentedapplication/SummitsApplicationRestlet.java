@@ -1,5 +1,7 @@
 package org.restlet.samples.openapidocumentedapplication;
 
+import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Server;
@@ -7,6 +9,7 @@ import org.restlet.data.Protocol;
 import org.restlet.ext.openapi.RestletOpenApiApplication;
 import org.restlet.routing.Router;
 
+@OpenAPIDefinition(info = @Info(title = "Summits API", version = "1.0"))
 public class SummitsApplicationRestlet extends RestletOpenApiApplication {
     @Override
     public Restlet createInboundRoot() {

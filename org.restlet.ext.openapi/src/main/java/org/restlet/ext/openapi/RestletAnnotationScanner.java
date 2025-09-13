@@ -12,6 +12,7 @@ import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.eclipse.microprofile.openapi.models.Operation;
 import org.eclipse.microprofile.openapi.models.PathItem;
 import org.jboss.jandex.*;
+import org.restlet.Application;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Route;
@@ -38,8 +39,10 @@ public class RestletAnnotationScanner extends AbstractAnnotationScanner {
     public OpenAPI scan(AnnotationScannerContext context, OpenAPI openAPI) {
         this.context = context;
 
-        if (context.getClassLoader() instanceof RestletClassLoaderWrapper restletClassLoaderWrapper) {
-            return processRouter(restletClassLoaderWrapper.getRouter(), openAPI);
+        if (context.getClassLoader() instanceof RestletClassLoaderWrapper wrapper) {
+            OpenAPI applicationOpenApi = processDefinitionAnnotation(context, getApplicationClassInfo(wrapper.getApplication()));
+            OpenAPI mergedOpenApi = MergeUtil.merge(openAPI, applicationOpenApi);
+            return processRouter(wrapper.getRouter(), mergedOpenApi);
         } else {
             return openAPI;
         }
@@ -114,6 +117,9 @@ public class RestletAnnotationScanner extends AbstractAnnotationScanner {
         // Process @APIResponse annotations
         processResponse(context, resourceClass, method, operation, null);
 
+        // Now set the operation on the PathItem as appropriate based on the Http method type
+        pathItem.setOperation(methodType, operation);
+
         // Get or create a PathItem to hold the operation
         PathItem existingPath = ModelUtil.paths(openApi).getPathItem(path);
 
@@ -136,6 +142,15 @@ public class RestletAnnotationScanner extends AbstractAnnotationScanner {
         try {
             Index index = Index.of(serverResource.getClass());
             return index.getClassByName(DotName.createSimple(serverResource.getClass()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ClassInfo getApplicationClassInfo(Application application) {
+        try {
+            Index index = Index.of(application.getClass());
+            return index.getClassByName(DotName.createSimple(application.getClass()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

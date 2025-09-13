@@ -35,7 +35,6 @@ public class RestletOpenApiApplication extends Application {
             }
         }
 
-
         return inboundRoot;
     }
 
@@ -62,7 +61,7 @@ public class RestletOpenApiApplication extends Application {
         try {
             var index = Index.of(getClass()); // FIXME is that necessary?
 
-            var classLoaderWrapper = new RestletClassLoaderWrapper(classLoader, router);
+            var classLoaderWrapper = new RestletClassLoaderWrapper(classLoader, this, router);
 
             SmallRyeOpenAPI result = SmallRyeOpenAPI.builder()
                     .withApplicationClassLoader(classLoaderWrapper)
