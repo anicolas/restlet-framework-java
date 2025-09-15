@@ -15,6 +15,7 @@ public class SummitsApplicationRestlet extends RestletOpenApiApplication {
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
         router.attach("/summits", SummitsResource.class);
+        router.attach("/summits/{summitId}", SummitResource.class);
         return router;
     }
 
