@@ -11,6 +11,7 @@ import org.eclipse.microprofile.openapi.OASFactory;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.eclipse.microprofile.openapi.models.Operation;
 import org.eclipse.microprofile.openapi.models.PathItem;
+import org.eclipse.microprofile.openapi.models.parameters.RequestBody;
 import org.jboss.jandex.*;
 import org.restlet.Application;
 import org.restlet.resource.Finder;
@@ -113,6 +114,12 @@ public class RestletAnnotationScanner extends AbstractAnnotationScanner {
         ResourceParameters params = getResourceParameters(resourceClass, method);
 
         operation.setParameters(params.getOperationParameters());
+
+        // Process any @RequestBody annotation (note: the @RequestBody annotation can be found on a method argument *or* on the method)
+        RequestBody requestBody = processRequestBody(context, method, params);
+        if (requestBody != null) {
+            operation.setRequestBody(requestBody);
+        }
 
         // Process @APIResponse annotations
         processResponse(context, resourceClass, method, operation, null);

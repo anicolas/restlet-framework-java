@@ -9,12 +9,20 @@ import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RestletOpenApiApplication extends Application {
     /**
      * Indicates if this application can document herself.
      */
     private volatile boolean documented;
+
+    private final List<Class<?>> classesToScan;
+
+    protected RestletOpenApiApplication(List<Class<?>> classesToScan) {
+        this.classesToScan = classesToScan;
+    }
 
     @Override
     public Restlet getInboundRoot() {
@@ -59,7 +67,9 @@ public class RestletOpenApiApplication extends Application {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
         try {
-            var index = Index.of(getClass()); // FIXME is that necessary?
+            var classes = new ArrayList<>(classesToScan);
+            classes.add(getClass());
+            var index = Index.of(classes); // FIXME is that necessary?
 
             var classLoaderWrapper = new RestletClassLoaderWrapper(classLoader, this, router);
 

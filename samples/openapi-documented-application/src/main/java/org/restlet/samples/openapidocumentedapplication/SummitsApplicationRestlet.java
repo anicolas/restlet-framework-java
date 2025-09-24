@@ -8,9 +8,18 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.openapi.RestletOpenApiApplication;
 import org.restlet.routing.Router;
+import org.restlet.samples.openapidocumentedapplication.model.Summit;
+
+import java.util.List;
 
 @OpenAPIDefinition(info = @Info(title = "Summits API", version = "1.0"))
 public class SummitsApplicationRestlet extends RestletOpenApiApplication {
+    public SummitsApplicationRestlet() {
+        super(
+                List.of(Summit.class)
+        );
+    }
+
     @Override
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
