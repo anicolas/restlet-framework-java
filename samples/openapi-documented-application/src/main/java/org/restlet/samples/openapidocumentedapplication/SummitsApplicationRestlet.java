@@ -1,7 +1,8 @@
 package org.restlet.samples.openapidocumentedapplication;
 
-import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
-import org.eclipse.microprofile.openapi.annotations.info.Info;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Server;

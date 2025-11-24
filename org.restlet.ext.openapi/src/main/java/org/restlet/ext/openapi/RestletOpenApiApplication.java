@@ -1,15 +1,12 @@
 package org.restlet.ext.openapi;
 
-import io.smallrye.openapi.api.SmallRyeOpenAPI;
-import org.jboss.jandex.Index;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RestletOpenApiApplication extends Application {
@@ -34,7 +31,7 @@ public class RestletOpenApiApplication extends Application {
                     Router rootRouter = getNextRouter(inboundRoot);
 
                     if (!documented && rootRouter != null) {
-                        SmallRyeOpenAPI openAPI = scan(rootRouter);
+                        OpenAPI openAPI = scan(rootRouter);
                         attachOpenApiSpecificationRestlet(rootRouter, openAPI);
                         documented = true;
                     }
@@ -63,29 +60,11 @@ public class RestletOpenApiApplication extends Application {
         return result;
     }
 
-    public SmallRyeOpenAPI scan(Router router) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-        try {
-            var classes = new ArrayList<>(classesToScan);
-            classes.add(getClass());
-            var index = Index.of(classes); // FIXME is that necessary?
-
-            var classLoaderWrapper = new RestletClassLoaderWrapper(classLoader, this, router);
-
-            SmallRyeOpenAPI result = SmallRyeOpenAPI.builder()
-                    .withApplicationClassLoader(classLoaderWrapper)
-                    .withIndex(index)
-                    .build();
-
-            return result;
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public OpenAPI scan(Router router) {
+        return new OpenAPI();
     }
 
-    private void attachOpenApiSpecificationRestlet(Router router, SmallRyeOpenAPI openAPIDefinition) {
+    private void attachOpenApiSpecificationRestlet(Router router, OpenAPI openAPIDefinition) {
         getOpenApiSpecificationRestlet(getContext(), openAPIDefinition).attach(router);
         documented = true;
     }
@@ -98,7 +77,7 @@ public class RestletOpenApiApplication extends Application {
      * formats.
      */
     public OpenApiSpecificationRestlet getOpenApiSpecificationRestlet(
-            Context context, SmallRyeOpenAPI openAPIDefinition) {
+            Context context, OpenAPI openAPIDefinition) {
         OpenApiSpecificationRestlet result = new OpenApiSpecificationRestlet(this, openAPIDefinition);
         return result;
     }

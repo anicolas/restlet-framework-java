@@ -1,7 +1,7 @@
 package org.restlet.samples.openapidocumentedapplication;
 
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.restlet.data.Status;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -19,8 +19,8 @@ public class SummitsResource extends ServerResource {
         return summitsRepository.findAll();
     }
 
-    @APIResponse(responseCode = "201")
     @Post
+    @Operation(summary = "Add a new summit", description = "Add a new summit to the list of summits")
     public void addSummit(@RequestBody Summit summit) {
         getResponse().setStatus(Status.SUCCESS_CREATED);
     }
